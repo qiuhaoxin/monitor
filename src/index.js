@@ -1,14 +1,19 @@
-window.addEventListener('unhandledrejection',function(e){
+window.addEventListener('unhandledrejection',function(err){
      //监听么有处理的promise的error
+     console.log("promise bao cuo!!",err.reason);
 })
-//监听外部资源加载失败
+//监听外部资源加载失败  注意要排除 ErrorEvent 的错误类型，避免重复监听
 window.addEventListener('error',function(event){
-   
+     // 如果样式外部文件，通过<link />标签进行加载 要加上rel="stylesheet" 才能监控加载失败，否则不行
     if(!(event instanceof ErrorEvent)){
         //排除js运行异常 
-        console.log("sdfsdfsf ",event);
         const target=event.target;
-        console.log("target src is ",target.src);
+        const tagName=target.tagName;
+        if(tagName=='LINK'){
+            console.log(`外部样式${target.href} 加载失败!`);
+        }else {
+            console.log(`链接 ${target.src} 加载失败!`);
+        } 
     }
 },true)
 /**
@@ -41,9 +46,18 @@ window.uploadError=function(){
 
 //采集性能指标
 function getPerformanceData(){
-    
+    const per=window.performance;
+    const memory=per.memory;
+    const timing=per.timing;
+    const n=per.navigation;
+    console.log("memory "+JSON.stringify(memory)+" and timing is "+JSON.stringify(timing)+" and n is "+JSON.stringify(n));
     const navigation=window.performance.getEntries();
     console.log("performance is ",navigation);
 }
 
 getPerformanceData();
+
+//封装上报的方法
+(function(win){
+    
+})(window)
